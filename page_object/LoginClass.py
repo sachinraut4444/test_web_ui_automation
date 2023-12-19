@@ -9,3 +9,4 @@ class LoginClass(BaseClass):
         "login_button": "id=login-button",
         "inventory_title": "class= title"
     }
+
