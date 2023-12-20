@@ -18,7 +18,7 @@ Standard user should place order for all products without any error
     InventoryClass.Click element on page locator    shopping_cart
     Verify selected product on cart page      ${product_data}
     Proceed with checkout from cart page
-    Add user information    testsfsd   djfkgdfjg   12345
+    Add user information        ${user_first_name}   ${user_last_name}   ${postal_code}
     Proceed with continue to confirm order details
     Verify selected product on checkout page        ${product_data}
     Proceed with finish order

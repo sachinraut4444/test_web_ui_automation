@@ -12,6 +12,9 @@ ${error_user}               error_user
 ${visual_user}              visual_user
 ${user_password}            secret_sauce
 ${headless}                 False
+${user_first_name}          Sachin
+${user_last_name}           Raut
+${postal_code}              411014
 
 @{parameters_Login}	    ${host}	    ${browser}      ${headless}     ${standard_user}        ${user_password}
 @{locked_user_parameters_Login}     ${host}	    ${browser}      ${headless}     ${locked_out_user}        ${user_password}
