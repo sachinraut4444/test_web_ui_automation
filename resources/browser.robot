@@ -20,8 +20,10 @@ open local browser
         Call Method    ${chrome_options}   add_argument    no-sandbox
         Call Method    ${chrome_options}   add_argument    disable-dev-shm-usage
 	    open browser	${URL}	    ${BROWSER}    options=${chrome_options}
+	    LoginClass.Wait until element visible on page       login_button
     ELSE
        open browser	${URL}	    ${BROWSER}
+       LoginClass.Wait until element visible on page       login_button
     END
 	Set Window Size	     1536       864
     Set Selenium Implicit Wait      5s

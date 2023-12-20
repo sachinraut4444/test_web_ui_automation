@@ -7,6 +7,7 @@ class LoginClass(BaseClass):
         "user_name": "id=user-name",
         "password": "id=password",
         "login_button": "id=login-button",
-        "inventory_title": "class= title"
+        "inventory_title": "class=title",
+        "login_error_button": "xpath=//div[@class='error-message-container error']"
     }
 
