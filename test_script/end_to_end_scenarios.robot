@@ -10,9 +10,22 @@ Test Teardown    Exit browser
 Standard user should place order for all products without any error
     [Tags]    12345
 
-    #${product_data}     read json file and return test data     all_product_list_file.json
-    InventoryClass.Select product on inventory      Sauce Labs Onesie
-    InventoryClass.Select product on inventory      Sauce Labs Bike Light
-    InventoryClass.Verify selected product count
+    ${product_data}     read json file and return test data     two_product_list_file.json
+    FOR     ${key}  IN  @{product_data.keys()}
+        Select product on inventory page     ${key}
+    END
+    Verify selected product count on inventory page
+    InventoryClass.Click element on page locator    shopping_cart
+    Verify selected product on cart page      ${product_data}
+    Proceed with checkout from cart page
+    Add user information    testsfsd   djfkgdfjg   12345
+    Proceed with continue to confirm order details
+    Verify selected product on checkout page        ${product_data}
+    Proceed with finish order
+    Verify order confirmation message
+    Navigate to product list page after confirming order
+
+
+
 
 

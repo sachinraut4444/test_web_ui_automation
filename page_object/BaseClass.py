@@ -2,11 +2,14 @@ from PageObjectLibrary import PageObject
 import logging
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import TimeoutException
 
 class BaseClass(PageObject):
 
     _locators = {
         "user_name1": "id=user-name",
+        "checkout_button": "id=checkout",
+        "continue_button": "id=continue",
     }
 
     def __init__(self):
@@ -59,3 +62,9 @@ class BaseClass(PageObject):
         else:
             raise ValueError(f"Unsupported locator strategy: {strategy}")
 
+    def move_to_specific_element(self, element_xpath):
+        try:
+            element = self.find_web_element(element_xpath)
+            self.browser.execute_script("arguments[0].scrollIntoView();", element)
+        except TimeoutException as ex:
+            logging.error("Exception raised")

@@ -14,7 +14,7 @@ class InventoryClass(BaseClass):
         "product_name": "//div[@class='inventory_item'][1]//div[@class='inventory_item_name']"
     }
 
-    def select_product_on_inventory(self, product_name):
+    def select_product_on_inventory_page(self, product_name):
         product_items = self.browser.find_elements(By.XPATH,
                                                    "//div[@class='inventory_list']//div[@class='inventory_item']")
 
@@ -25,16 +25,12 @@ class InventoryClass(BaseClass):
             if product_name == product_name_text:
                 add_cart_button_xpath = f"{self.get_product_xpath(index)}//button"
                 product_item.find_element(By.XPATH, add_cart_button_xpath).click()
-                time.sleep(5)
 
     def get_product_xpath(self, index):
         return f"//div[@class='inventory_list']//div[@class='inventory_item'][{index}]"
 
-    def verify_selected_product_count(self):
+    def verify_selected_product_count_on_inventory_page(self):
         selected_product_xpath = self.browser.find_elements(By.XPATH, "//button[contains(@data-test,'remove-')]")
-        time.sleep(5)
         shipping_cart_product_count = self.browser.find_element(By.CLASS_NAME, "shopping_cart_badge").text
         logging.info(f"{len(selected_product_xpath)}, {shipping_cart_product_count} ")
-
         assert len(selected_product_xpath) == int(shipping_cart_product_count), "Selected Product Mismatch with Add to cart"
-
