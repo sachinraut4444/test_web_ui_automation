@@ -20,3 +20,4 @@ class CheckoutConfirmationClass(BaseClass):
 
     def navigate_to_product_list_page_after_confirming_order(self):
         self.selib.click_element(self.locator["back_to_home_button"])
+

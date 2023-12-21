@@ -26,3 +26,5 @@ class CheckoutUserInformationClass(BaseClass):
     def proceed_with_continue_to_confirm_order_details(self):
         self.selib.click_element(self.locator["continue_button"])
 
+
+

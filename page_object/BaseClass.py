@@ -53,12 +53,10 @@ class BaseClass(PageObject):
         elif strategy.lower() == 'name':
             return self.browser.find_element(By.NAME, value)
         elif strategy.lower() == 'class':
-            logging.info("inside class")
             return self.browser.find_element(By.CLASS_NAME, value)
         elif strategy.lower() == 'xpath':
             return self.browser.find_element(By.XPATH, value)
         elif strategy.lower() == 'css':
-            logging.info("inside css")
             return self.browser.find_element(By.CSS_SELECTOR, value)
         else:
             raise ValueError(f"Unsupported locator strategy: {strategy}")

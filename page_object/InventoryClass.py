@@ -1,9 +1,10 @@
 from BaseClass import BaseClass
-import logging
+
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 import logging
-from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.keys import Keys
 import time
 
@@ -33,11 +34,11 @@ class InventoryClass(BaseClass):
         self.selib.wait_until_element_is_visible(element_locator_value)
         self.selib.click_element(element_locator_value)
 
-    def check_element_visible_on_page(self, locator_name):
+    def check_element_visible_inventory_on_page(self, locator_name):
         element_locator_value = str(self.locator[locator_name])
         self.selib.wait_until_element_is_visible(element_locator_value)
 
-    def select_unselect_product_on_inventory_page(self, product_name, remove_product=True):
+    def select_unselect_product_on_inventory_page(self, product_name, add_product=True):
         product_items = self.browser.find_elements(By.XPATH,
                                                    "//div[@class='inventory_list']//div[@class='inventory_item']")
 
@@ -46,14 +47,24 @@ class InventoryClass(BaseClass):
             product_name_text = product_item.find_element(By.XPATH, product_name_xpath).text
 
             if product_name == product_name_text:
-                if remove_product:
-                    add_cart_button_xpath = f"{self.get_product_xpath(index)}//button"
-                    product_item.find_element(By.XPATH, add_cart_button_xpath).click()
+                if add_product:
+                    try:
+                        add_cart_button_xpath = f"{self.get_product_xpath(index)}//button"
+                        product_item.find_element(By.XPATH, add_cart_button_xpath).click()
+                        remove_button_xpath = f"{self.get_product_xpath(index)}//button[contains(text(), 'Remove')]"
+                        logging.info(f"remove_button_xpath {remove_button_xpath}")
+                        wait_time = 2
+                        WebDriverWait(self.browser, wait_time).until(
+                            EC.visibility_of_element_located((By.XPATH, remove_button_xpath))
+                        )
+                    except TimeoutException:
+                        raise TimeoutError(f"Failed to add Product into cart ")
                 else:
-                    add_cart_button_xpath = f"{self.get_product_xpath(index)}//button"
-                    product_item.find_element(By.XPATH, add_cart_button_xpath).click()
-
-
+                    try:
+                        add_cart_button_xpath = f"{self.get_product_xpath(index)}//button"
+                        product_item.find_element(By.XPATH, add_cart_button_xpath).click()
+                    except TimeoutException:
+                        raise TimeoutError(f"Failed to remove Product")
 
     def get_all_product_name_and_price_from_inventory_page(self):
 
@@ -89,3 +100,14 @@ class InventoryClass(BaseClass):
 
     def proceed_to_view_item_on_cart_page(self):
         self.selib.click_element(self.locator["shopping_cart"])
+
+    def verify_respective_image_display_for_product_on_inventory_page(self):
+        product_items = self.browser.find_elements(By.XPATH,
+                                                   "//div[@class='inventory_list']//div[@class='inventory_item']")
+        image_url_list = []
+        for index, product_item in enumerate(product_items, start=1):
+            product_image_xpath = f"{self.get_product_xpath(index)}//div[@class='inventory_item_img']//img"
+            product_image_url = product_item.find_element(By.XPATH, product_image_xpath).get_attribute("src").split("media")[1]
+            image_url_list.append(product_image_url)
+        image_url_list = list(set(image_url_list))
+        assert len(product_items) == len(image_url_list), "Product Image is not matching"
