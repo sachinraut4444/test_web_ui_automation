@@ -44,15 +44,58 @@ Verify that products are sorted by default alphabetically by name
     ${is_sorted}=    Evaluate    sorted(${keys_list}) == ${keys_list}
     Should Be True    ${is_sorted}    List is not sorted alphabetically
 
-Verify price sorting with ascending order
+Verify price sorting functionality with ascending order
     [tags]    1234
 
+    ${product_name_price_default_dictionary}    Get all product name and price from inventory page
+    ${product_name_price_expected_price_sort_list}    Evaluate    sorted(${product_name_price_default_dictionary}.items(), key=lambda x: float(x[1].replace('$', '')))
+    Sort inventory product      Price (low to high)
+    verify sorted product on inventory page         ${product_name_price_expected_price_sort_list}
 
-    ${product_name_price_dictionary}    Get all product name and price from inventory page
-    ${values_list}=    Evaluate    [value for key, value in ${product_name_price_dictionary}.items()]
-    Log to console      ${values_list}
-    ${is_sorted}=    Evaluate    sorted(${values_list}) == ${values_list}
-    #Should Be True    ${is_sorted}    List is not sorted alphabetically
+Verify shopping cart count should be updated as per user activity
+    [Tags]    1234
+    select_unselect_product_on_inventory_page        Sauce Labs Backpack
+    Verify selected product count with shopping cart count
+    select_unselect_product_on_inventory_page        Test.allTheThings() T-Shirt (Red)
+    Verify selected product count with shopping cart count
+    select_unselect_product_on_inventory_page        Test.allTheThings() T-Shirt (Red)       True
+    Verify selected product count with shopping cart count
+
+Verify user should able to add all products into cart
+    [Tags]    1234
+    ${product_data}     read json file and return test data     all_product_list_file.json
+    FOR     ${key}  IN  @{product_data.keys()}
+        select_unselect_product_on_inventory_page     ${key}
+    END
+    Verify selected product count with shopping cart count
+
+Verify user should able to remove all selected products from cart
+    [Tags]    1234
+    ${product_data}     read json file and return test data     all_product_list_file.json
+    FOR     ${key}  IN  @{product_data.keys()}
+        select_unselect_product_on_inventory_page     ${key}
+    END
+    Verify selected product count with shopping cart count
+    FOR     ${key}  IN  @{product_data.keys()}
+        select_unselect_product_on_inventory_page     ${key}    True
+    END
+    Verify selected product count with shopping cart count
+
+Verify that selected product should not disappear from cart after re-login
+    [Tags]    123
+
+    select_unselect_product_on_inventory_page        Sauce Labs Backpack
+    Verify selected product count with shopping cart count
+    select_unselect_product_on_inventory_page        Test.allTheThings() T-Shirt (Red)
+    Verify selected product count with shopping cart count
+    Logout from the application
+    Re-login to application        ${parameters_Login}
+    ${actual_selected_product}      InventoryClass.Get element text     shopping_cart
+    Verify number       2       ${actual_selected_product}
+
+
+
+
 
 
 

@@ -12,7 +12,12 @@ class CheckoutOverviewClass(BaseClass):
         "first_name_input_box": "id=first-name",
         "last_name_input_box": "id=last-name",
         "postal_code_input_box": "id=postal-code",
-        "finish_button": "id=finish"
+        "finish_button": "id=finish",
+        "total_price_element": "xpath=//div[@class='summary_info_label summary_total_label']",
+        "sub_total_price_element": "xpath=//div[@class='summary_subtotal_label']",
+        "total_tax_element": "xpath=//div[@class='summary_tax_label']",
+        "payment_information_element": "xpath=//div[contains(text(), 'Payment Information')]//following::div[1]",
+        "shipping_information_element": "xpath=//div[contains(text(), 'Shipping Information')]//following::div[1]",
     }
 
     def verify_selected_product_on_checkout_page(self, product_data):
@@ -35,7 +40,28 @@ class CheckoutOverviewClass(BaseClass):
         except TimeoutException as ex:
             logging.error("Timeout exception")
 
-
-
     def proceed_with_finish_order(self):
         self.selib.click_element(self.locator["finish_button"])
+
+    def verify_total_price_of_selected_product(self, product_data):
+        actual_total_price_of_product = float(BaseClass.get_element_text(self, "total_price_element").split("$")[1])
+        total_tax_on_selected_product = float(BaseClass.get_element_text(self, "total_tax_element").split("$")[1])
+        sub_total_price = self.get_item_total_price_of_selected_product(product_data)
+        expected_total_price_of_product = round(sub_total_price + total_tax_on_selected_product, 2)
+        assert expected_total_price_of_product == actual_total_price_of_product
+
+    def get_item_total_price_of_selected_product(self, product_data):
+        total_price = 0.0
+        for product, data in product_data.items():
+            quantity = int(data['product_quantity'])
+            price = float(data['product_price'].replace('$', ''))  # Remove '$' and convert to float
+            total_price += quantity * price
+
+        return total_price
+
+    # def verify_payment_information_for_product(self):
+    #     actual_payment_information = BaseClass.get_element_text(self, "payment_information_element")
+    #     assert
+    #
+    # def verify_shipping_information_for_product(self):
+    #     actual_shipping_information = BaseClass.get_element_text(self, "shipping_information_element")

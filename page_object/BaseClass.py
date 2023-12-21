@@ -34,6 +34,7 @@ class BaseClass(PageObject):
     def get_element_text(self, locator_name):
         element_locator = str(self.locator[locator_name])
         element_locator_value = self.find_web_element(element_locator)
+        self.selib.wait_until_element_is_visible(element_locator_value, timeout=10)
         locator_text = self.selib.get_text(element_locator_value)
         return locator_text
 
@@ -68,3 +69,6 @@ class BaseClass(PageObject):
             self.browser.execute_script("arguments[0].scrollIntoView();", element)
         except TimeoutException as ex:
             logging.error("Exception raised")
+
+    def get_product_name_path(self, product_name):
+        return f"//DIV[@class='inventory_item_name'][text()='{product_name}']"

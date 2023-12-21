@@ -30,3 +30,14 @@ input username and password in login form
     LoginClass.Enter Text In Input Box     user_name       ${user_name}
 	LoginClass.Enter text in input box     password       ${password}
 	LoginClass.Click element on page locator       login_button
+
+logout from the application
+    Click element on inventory page    side_menu_open_button
+    Click element on inventory page     side_menu_logout_button
+
+Re-login to application
+    [Arguments]    ${parameters}
+    LoginClass.Enter Text In Input Box     user_name       ${parameters}[3]
+	LoginClass.Enter text in input box     password       ${parameters}[4]
+	LoginClass.Click element on page locator       login_button
+    InventoryClass.Wait until element visible on page    inventory_container

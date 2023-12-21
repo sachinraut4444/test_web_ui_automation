@@ -21,7 +21,8 @@ class InventoryClass(BaseClass):
         "side_menu_logout_button": "id= logout_sidebar_link",
         "side_menu_reset_button": "id= reset_sidebar_link",
         "side_menu_close_button": "id=react-burger-cross-btn",
-        "product_name": "//div[@class='inventory_item'][1]//div[@class='inventory_item_name']"
+        "product_name": "//div[@class='inventory_item'][1]//div[@class='inventory_item_name']",
+        "remove_single_product_from_detail_view": "xpath=//button[contains(text(), 'Remove')]"
     }
 
     def get_inventory_element_locator(self, locator_name):
@@ -36,7 +37,7 @@ class InventoryClass(BaseClass):
         element_locator_value = str(self.locator[locator_name])
         self.selib.wait_until_element_is_visible(element_locator_value)
 
-    def select_product_on_inventory_page(self, product_name):
+    def select_unselect_product_on_inventory_page(self, product_name, remove_product=True):
         product_items = self.browser.find_elements(By.XPATH,
                                                    "//div[@class='inventory_list']//div[@class='inventory_item']")
 
@@ -45,8 +46,14 @@ class InventoryClass(BaseClass):
             product_name_text = product_item.find_element(By.XPATH, product_name_xpath).text
 
             if product_name == product_name_text:
-                add_cart_button_xpath = f"{self.get_product_xpath(index)}//button"
-                product_item.find_element(By.XPATH, add_cart_button_xpath).click()
+                if remove_product:
+                    add_cart_button_xpath = f"{self.get_product_xpath(index)}//button"
+                    product_item.find_element(By.XPATH, add_cart_button_xpath).click()
+                else:
+                    add_cart_button_xpath = f"{self.get_product_xpath(index)}//button"
+                    product_item.find_element(By.XPATH, add_cart_button_xpath).click()
+
+
 
     def get_all_product_name_and_price_from_inventory_page(self):
 
@@ -66,8 +73,19 @@ class InventoryClass(BaseClass):
     def get_product_xpath(self, index):
         return f"//div[@class='inventory_list']//div[@class='inventory_item'][{index}]"
 
-    def verify_selected_product_count_on_inventory_page(self):
-        selected_product_xpath = self.browser.find_elements(By.XPATH, "//button[contains(@data-test,'remove-')]")
-        shipping_cart_product_count = self.browser.find_element(By.CLASS_NAME, "shopping_cart_badge").text
-        logging.info(f"{len(selected_product_xpath)}, {shipping_cart_product_count} ")
-        assert len(selected_product_xpath) == int(shipping_cart_product_count), "Selected Product Mismatch with Add to cart"
+    def verify_selected_product_count_with_shopping_cart_count(self):
+        selected_product_elements = self.browser.find_elements(By.XPATH, "//button[contains(@data-test,'remove-')]")
+        shopping_cart_product_count = self.browser.find_element(By.CLASS_NAME, "shopping_cart_link").text
+
+        selected_product_count = len(selected_product_elements)
+        logging.info(
+            f"Selected Product Count: {selected_product_count}, Shopping Cart Product Count: {shopping_cart_product_count}")
+
+        if selected_product_count != 0:
+            assert selected_product_count == int(
+                shopping_cart_product_count), "Selected Product Mismatch with Add to cart"
+        elif len(shopping_cart_product_count) != 0:
+            assert False, "Unexpected Shopping Cart Product Count"
+
+    def proceed_to_view_item_on_cart_page(self):
+        self.selib.click_element(self.locator["shopping_cart"])

@@ -12,14 +12,13 @@ Standard user should place order for all products without any error
 
     ${product_data}     read json file and return test data     two_product_list_file.json
     FOR     ${key}  IN  @{product_data.keys()}
-        Select product on inventory page     ${key}
+        select_unselect_product_on_inventory_page     ${key}
     END
-    Verify selected product count on inventory page
-    InventoryClass.Click element on page locator    shopping_cart
+    Verify selected product count with shopping cart count
+    proceed_to_view_item_on_cart_page
     Verify selected product on cart page      ${product_data}
     Proceed with checkout from cart page
-    Add user information        ${user_first_name}   ${user_last_name}   ${postal_code}
-    Proceed with continue to confirm order details
+    Add user information proceed with continue to confirm order details        ${user_first_name}   ${user_last_name}   ${postal_code}
     Verify selected product on checkout page        ${product_data}
     Proceed with finish order
     Verify order confirmation message
