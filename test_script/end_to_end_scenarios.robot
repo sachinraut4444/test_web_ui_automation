@@ -15,7 +15,7 @@ Standard user should place order for all products without any error
         select_unselect_product_on_inventory_page     ${key}
     END
     Verify selected product count with shopping cart count
-    proceed_to_view_item_on_cart_page
+    Proceed to view item on cart page
     Verify selected product on cart page      ${product_data}
     Proceed with checkout from cart page
     Add user information proceed with continue to confirm order details        ${user_first_name}   ${user_last_name}   ${postal_code}

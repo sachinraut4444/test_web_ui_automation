@@ -9,9 +9,11 @@ Library         SeleniumLibrary
 Login to application
 	[Arguments]	    ${parameters}
 	Navigate to url     ${parameters}[0]    ${parameters}[1]    ${parameters}[2]
+	LoginClass.Wait until element visible on page           user_name
 	LoginClass.Enter Text In Input Box     user_name       ${parameters}[3]
 	LoginClass.Enter text in input box     password       ${parameters}[4]
-	LoginClass.Click element on page locator       login_button
+	${login_button}     LoginClass.Return element page locator    login_button
+	Click element       ${login_button}
     InventoryClass.Wait until element visible on page    inventory_container
 
 verify login functionality for invalid credentials

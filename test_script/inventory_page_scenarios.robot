@@ -77,7 +77,7 @@ Verify user should able to remove all selected products from cart
     END
     Verify selected product count with shopping cart count
     FOR     ${key}  IN  @{product_data.keys()}
-        select_unselect_product_on_inventory_page     ${key}    True
+        select_unselect_product_on_inventory_page     ${key}    False
     END
     Verify selected product count with shopping cart count
 

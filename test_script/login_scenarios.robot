@@ -26,13 +26,19 @@ Verify Validation Error Message for Invalid Login
         ${EMPTY}        ${EMPTY}                Epic sadface: Username is required
         standard_user       ${EMPTY}           Epic sadface: Password is required
 
-
-
 Verify login activity locked for user after unsuccessful login retry
     [Tags]      login       3
 
     Input username and password in login form       ${locked_user_parameters_Login}[3]  ${locked_user_parameters_Login}[4]
     ${actual_error_text}       LoginClass.Get element text     login_error_button
     assert.Verify string should match     Epic sadface: Sorry, this user has been locked out.        ${actual_error_text}
+
+Verify that user should navigate to login page after logout
+    [Setup]    Login to application    ${parameters_Login}
+    [Tags]      login       311
+
+    logout from the application
+    LoginClass.Wait until element visible on page       user_name
+
 
 

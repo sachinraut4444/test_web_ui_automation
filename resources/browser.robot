@@ -26,7 +26,7 @@ open local browser
        LoginClass.Wait until element visible on page       login_button
     END
 	Set Window Size	     1536       864
-    Set Selenium Implicit Wait      5s
+    #Set Selenium Implicit Wait      5s
 
 exit browser
 	RUN KEYWORD AND CONTINUE ON FAILURE	    close browser

@@ -10,11 +10,10 @@ import time
 
 
 class InventoryClass(BaseClass):
-
     _locators = {
         "inventory_container": "id=inventory_container",
         "product_title": "class=title",
-        "shopping_cart": "class=shopping_cart_link",
+        "shopping_cart": "class=shopping_cart_container",
         "sort_icon": "class=product_sort_container",
         "side_menu_open_button": "id=react-burger-menu-btn",
         "side_menu_all_item_button": "id= inventory_sidebar_link",
@@ -52,7 +51,7 @@ class InventoryClass(BaseClass):
                         add_cart_button_xpath = f"{self.get_product_xpath(index)}//button"
                         product_item.find_element(By.XPATH, add_cart_button_xpath).click()
                         remove_button_xpath = f"{self.get_product_xpath(index)}//button[contains(text(), 'Remove')]"
-                        logging.info(f"remove_button_xpath {remove_button_xpath}")
+
                         wait_time = 2
                         WebDriverWait(self.browser, wait_time).until(
                             EC.visibility_of_element_located((By.XPATH, remove_button_xpath))
@@ -63,6 +62,12 @@ class InventoryClass(BaseClass):
                     try:
                         add_cart_button_xpath = f"{self.get_product_xpath(index)}//button"
                         product_item.find_element(By.XPATH, add_cart_button_xpath).click()
+                        add_button_xpath = f"{self.get_product_xpath(index)}//button[contains(text(), 'Add to cart')]"
+                        logging.info(f"remove_button_xpath {add_button_xpath}")
+                        wait_time = 2
+                        WebDriverWait(self.browser, wait_time).until(
+                            EC.visibility_of_element_located((By.XPATH, add_button_xpath))
+                        )
                     except TimeoutException:
                         raise TimeoutError(f"Failed to remove Product")
 
@@ -99,15 +104,48 @@ class InventoryClass(BaseClass):
             assert False, "Unexpected Shopping Cart Product Count"
 
     def proceed_to_view_item_on_cart_page(self):
-        self.selib.click_element(self.locator["shopping_cart"])
-
+        try:
+            self.selib.click_element(self.locator["shopping_cart"])
+        except NoSuchElementException:
+            raise "Unable to locate element"
     def verify_respective_image_display_for_product_on_inventory_page(self):
         product_items = self.browser.find_elements(By.XPATH,
                                                    "//div[@class='inventory_list']//div[@class='inventory_item']")
         image_url_list = []
         for index, product_item in enumerate(product_items, start=1):
             product_image_xpath = f"{self.get_product_xpath(index)}//div[@class='inventory_item_img']//img"
-            product_image_url = product_item.find_element(By.XPATH, product_image_xpath).get_attribute("src").split("media")[1]
+            product_image_url = \
+            product_item.find_element(By.XPATH, product_image_xpath).get_attribute("src").split("media")[1]
             image_url_list.append(product_image_url)
         image_url_list = list(set(image_url_list))
         assert len(product_items) == len(image_url_list), "Product Image is not matching"
+
+    def verify_ad_to_cart_element_aligned_properly(self):
+        product_items = self.browser.find_elements(By.XPATH,
+                                                   "//div[@class='inventory_list']//div[@class='inventory_item']")
+        product_button_list = []
+        for index, product_item in enumerate(product_items, start=1):
+            product_button_xpath = f"{self.get_product_xpath(index)}//button"
+            product_button_class_text = product_item.find_element(By.XPATH, product_button_xpath).get_attribute("class")
+            logging.info(f"{product_button_class_text}")
+            product_button_list.append(product_button_class_text)
+        product_button_list = list(set(product_button_list))
+        assert len(product_button_list) == 1, "Product Ad to cart button is not properly aligned"
+
+    def load_product_on_page_within_one_second_after_sort_on_product_page(self):
+        first_default_product_xpath = "//div[@class='inventory_list']//div[@class='inventory_item'][1]//DIV[@class='inventory_item_name '][text()='Sauce Labs Backpack']"
+
+        try:
+            start_time = int(round(time.time() * 1000))
+            # Sort by Name (Z to A)
+            self.selib.select_from_list_by_label(self.locator["sort_icon"], "Name (Z to A)")
+            # Wait for the first default product to disappear
+            WebDriverWait(self.browser, 60).until_not(
+                EC.presence_of_element_located((By.XPATH, first_default_product_xpath))
+            )
+            end_time = int(round(time.time() * 1000))
+            response_time = (end_time - start_time) / 1000
+            assert response_time <= 1, "Sorted result did not load within the given time"
+        except TimeoutException:
+            logging.error("TimeoutException: Sorting and loading products took longer than expected.")
+

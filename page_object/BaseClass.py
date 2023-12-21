@@ -29,7 +29,7 @@ class BaseClass(PageObject):
 
     def wait_until_element_visible_on_page(self, locator_name):
         element_locator_value = str(self.locator[locator_name])
-        self.selib.wait_until_element_is_visible(element_locator_value, timeout=10)
+        self.selib.wait_until_element_is_visible(element_locator_value, timeout=1)
 
     def get_element_text(self, locator_name):
         element_locator = str(self.locator[locator_name])
