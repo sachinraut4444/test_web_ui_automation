@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation    Scenarios related user information
+Documentation    Added scenarios related user information
 
 Resource    ../resources/lib_resource.robot
 Resource    ../page_object/lib_page_object.robot
@@ -11,7 +11,7 @@ Test Teardown    Exit browser
 *** Test Cases ***
 verify user gets validation message if fails to fill all fields
     [Documentation]     This scenario cover four negative test case to validate error message
-    [Tags]    1234
+    [Tags]    ui-1    user_information     regression
 
     Verify user successfully added few products into cart    two_product_list_file.json
     Verify user information for invalid information    ${EMPTY}         ${user_last_name}   ${postal_code}       Error: First Name is required

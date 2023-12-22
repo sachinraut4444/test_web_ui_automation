@@ -16,6 +16,12 @@ class CartClass(BaseClass):
         "continue_shopping_button": "id=continue-shopping",
     }
 
+    def navigate_to_product_page_from_cart_section(self):
+        self.selib.click_element(self.locator["continue_shopping_button"])
+
+    def proceed_with_checkout_from_cart_page(self):
+        self.selib.click_element(self.locator["checkout_button"])
+
     def unselect_product_on_cart_page(self, product_name, remove_product=True):
         product_items = self.browser.find_elements(
             By.XPATH, "//div[@class='cart_list']//div[@class='cart_item']"
@@ -80,9 +86,3 @@ class CartClass(BaseClass):
 
         except TimeoutException as ex:
             logging.error("Timeout exception")
-
-    def proceed_with_checkout_from_cart_page(self):
-        self.selib.click_element(self.locator["checkout_button"])
-
-    def navigate_to_product_page_from_cart_section(self):
-        self.selib.click_element(self.locator["continue_shopping_button"])

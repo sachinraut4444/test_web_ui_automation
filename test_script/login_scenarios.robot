@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation    Suite description
+Documentation    Added login related scenarios
 
 Resource    ../resources/lib_resource.robot
 Library         SeleniumLibrary
@@ -16,7 +16,7 @@ Verify that valid user able to login into application without any error
     [Teardown]    Exit browser
 
 Verify Validation Error Message for Invalid Login
-    [Tags]      login       2
+    [Tags]      lp-2    login_page     regression
     [Template]    verify login functionality for invalid credentials
         invalid user    invalid password        Epic sadface: Username and password do not match any user in this service
         standard_user   invalid password       Epic sadface: Username and password do not match any user in this service
@@ -26,7 +26,7 @@ Verify Validation Error Message for Invalid Login
         standard_user       ${EMPTY}           Epic sadface: Password is required
 
 Verify login activity locked for user after unsuccessful login retry
-    [Tags]      login       3
+    [Tags]      lp-3    login_page     regression
 
     Input username and password in login form       ${locked_user_parameters_Login}[3]  ${locked_user_parameters_Login}[4]
     ${actual_error_text}       LoginClass.Get element text     login_error_button
@@ -34,7 +34,7 @@ Verify login activity locked for user after unsuccessful login retry
 
 Verify that user should navigate to login page after logout
     [Setup]    Login to application    ${parameters_Login}
-    [Tags]      login       311
+    [Tags]      lp-4    login_page     regression
 
     logout from the application
     LoginClass.Wait until element visible on page       user_name

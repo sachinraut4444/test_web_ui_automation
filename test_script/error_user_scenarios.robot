@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation    Scenarios related to problem_user
+Documentation    Added error user related scenarios
 
 
 Resource    ../resources/lib_resource.robot
@@ -9,7 +9,7 @@ Test Setup    Login to application    ${error_user_parameters_Login}
 Test Teardown    Exit browser
 *** Test Cases ***
 Verify user should able to remove selected products from inventory page
-    [Tags]    1234
+    [Tags]    eu-1    error_user     regression
     ${product_data}     read json file and return test data     single_product_list_file.json
     FOR     ${key}  IN  @{product_data.keys()}
         select_unselect_product_on_inventory_page     ${key}
@@ -21,7 +21,7 @@ Verify user should able to remove selected products from inventory page
     Verify selected product count with shopping cart count
 
 Verify that user should able to fill user information correctly
-    [Tags]    12345
+    [Tags]    eu-2    error_user     regression
 
     ${product_data}     read json file and return test data     single_product_list_file.json
     FOR     ${key}  IN  @{product_data.keys()}
@@ -33,7 +33,7 @@ Verify that user should able to fill user information correctly
 
 Verify that user should not place order for invalid order process
     [Documentation]    The user information input box validation is tested in another scenario
-    [Tags]    12345
+    [Tags]    eu-3    error_user     regression
 
     ${product_data}     read json file and return test data     single_product_list_file.json
     FOR     ${key}  IN  @{product_data.keys()}

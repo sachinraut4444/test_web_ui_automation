@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation    End to End Scenarios
+Documentation    Added End to End Scenarios
 
 Resource    ../resources/lib_resource.robot
 Library         SeleniumLibrary
@@ -8,7 +8,7 @@ Test Setup    Login to application    ${parameters_Login}
 Test Teardown    Exit browser
 *** Test Cases ***
 Standard user should place order for all products without any error
-    [Tags]    12345
+    [Tags]    e2e-1    end_to_end     regression
 
     ${product_data}     read json file and return test data     two_product_list_file.json
     FOR     ${key}  IN  @{product_data.keys()}

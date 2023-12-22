@@ -19,6 +19,23 @@ class CheckoutOverviewClass(BaseClass):
         "cancel_button": "id=cancel",
     }
 
+    def get_item_total_price_of_selected_product(self, product_data):
+        total_price = 0.0
+        for product, data in product_data.items():
+            quantity = int(data["product_quantity"])
+            price = float(
+                data["product_price"].replace("$", "")
+            )  # Remove '$' and convert to float
+            total_price += quantity * price
+
+        return total_price
+
+    def proceed_with_cancel_from_confirm_order_page(self):
+        self.selib.click_element(self.locator["cancel_button"])
+
+    def proceed_with_finish_order(self):
+        self.selib.click_element(self.locator["finish_button"])
+
     def verify_selected_product_on_checkout_page(self, product_data):
         try:
             cart_items = self.browser.find_elements(
@@ -47,9 +64,6 @@ class CheckoutOverviewClass(BaseClass):
         except TimeoutException as ex:
             logging.error("Timeout exception")
 
-    def proceed_with_finish_order(self):
-        self.selib.click_element(self.locator["finish_button"])
-
     def verify_total_price_of_selected_product(self, product_data):
         actual_total_price_of_product = float(
             BaseClass.get_element_text(self, "total_price_element").split("$")[1]
@@ -62,17 +76,3 @@ class CheckoutOverviewClass(BaseClass):
             sub_total_price + total_tax_on_selected_product, 2
         )
         assert expected_total_price_of_product == actual_total_price_of_product
-
-    def get_item_total_price_of_selected_product(self, product_data):
-        total_price = 0.0
-        for product, data in product_data.items():
-            quantity = int(data["product_quantity"])
-            price = float(
-                data["product_price"].replace("$", "")
-            )  # Remove '$' and convert to float
-            total_price += quantity * price
-
-        return total_price
-
-    def proceed_with_cancel_from_confirm_order_page(self):
-        self.selib.click_element(self.locator["cancel_button"])

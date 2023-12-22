@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation    Scenarios related to problem_user
+Documentation    Added scenarios related to problem_user
 
 
 Resource    ../resources/lib_resource.robot
@@ -9,7 +9,7 @@ Test Setup    Login to application    ${problem_user_parameters_Login}
 Test Teardown    Exit browser
 *** Test Cases ***
 Verify user should select all products from product inventory page
-    [Tags]    12345
+    [Tags]    pbu-1    problem_user     regression
 
     ${product_data}     read json file and return test data     all_product_list_file.json
     FOR     ${key}  IN  @{product_data.keys()}
@@ -18,7 +18,7 @@ Verify user should select all products from product inventory page
     Verify selected product count with shopping cart count
 
 Verify that product display with respective images
-    [Tags]    12345
+    [Tags]    pbu-2    problem_user     regression
 
     Verify respective image display for product on inventory page
 

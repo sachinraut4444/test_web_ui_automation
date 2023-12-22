@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation    Scenarios related to Inventory Page
+Documentation    Added scenarios related to Inventory Page
 
 Resource    ../resources/lib_resource.robot
 Library         SeleniumLibrary
@@ -13,12 +13,12 @@ Test Teardown    Exit browser
 
 *** Test Cases ***
 Verify user should open and close side navigation bar
-    [Tags]    12345
+    [Tags]    ip-1    inventory_page     regression
     Click element on inventory page    side_menu_open_button
     Click element on inventory page    side_menu_close_button
 
 Verify all buttons on navigation bar
-    [Tags]    12345
+    [Tags]    ip-2    inventory_page     regression
     Click element on inventory page     side_menu_open_button
     Check element visible inventory on page       side_menu_all_item_button
     Check element visible inventory on page       side_menu_about_button
@@ -27,7 +27,7 @@ Verify all buttons on navigation bar
     Click element on inventory page     side_menu_close_button
 
 Verify sorting dropdown intractable on inventory page
-    [Tags]    12345
+    [Tags]    ip-3    inventory_page     regression
 
     Check element visible inventory on page       sort_icon
     ${sorting_drop_down}    Get inventory element locator       sort_icon
@@ -37,7 +37,7 @@ Verify sorting dropdown intractable on inventory page
     Lists should be equal       ${sorting_expected_all_options}      ${available_sorting_options}
 
 Verify that products are sorted by default alphabetically by name
-    [Tags]    133
+    [Tags]    ip-4    inventory_page     regression
 
     ${product_name_price_dictionary}    Get all product name and price from inventory page
     ${keys_list}=    Evaluate    [key for key in ${product_name_price_dictionary}]
@@ -45,7 +45,7 @@ Verify that products are sorted by default alphabetically by name
     Should Be True    ${is_sorted}    List is not sorted alphabetically
 
 Verify price sorting functionality with ascending order
-    [tags]    1234
+    [Tags]    ip-5    inventory_page     regression
 
     ${product_name_price_default_dictionary}    Get all product name and price from inventory page
     ${product_name_price_expected_price_sort_list}    Evaluate    sorted(${product_name_price_default_dictionary}.items(), key=lambda x: float(x[1].replace('$', '')))
@@ -53,7 +53,7 @@ Verify price sorting functionality with ascending order
     verify sorted product on inventory page         ${product_name_price_expected_price_sort_list}
 
 Verify shopping cart count should be updated as per user activity
-    [Tags]    123411
+    [Tags]    ip-6    inventory_page     regression
     select_unselect_product_on_inventory_page        Sauce Labs Backpack
     Verify selected product count with shopping cart count
     select_unselect_product_on_inventory_page        Test.allTheThings() T-Shirt (Red)
@@ -62,7 +62,7 @@ Verify shopping cart count should be updated as per user activity
     Verify selected product count with shopping cart count
 
 Verify user should able to add all products into cart
-    [Tags]    1234
+    [Tags]    ip-7    inventory_page     regression
     ${product_data}     read json file and return test data     all_product_list_file.json
     FOR     ${key}  IN  @{product_data.keys()}
         select_unselect_product_on_inventory_page     ${key}
@@ -70,7 +70,7 @@ Verify user should able to add all products into cart
     Verify selected product count with shopping cart count
 
 Verify user should able to remove all selected products from cart
-    [Tags]    1234
+    [Tags]    ip-8    inventory_page     regression
     ${product_data}     read json file and return test data     all_product_list_file.json
     FOR     ${key}  IN  @{product_data.keys()}
         select_unselect_product_on_inventory_page     ${key}
@@ -82,7 +82,7 @@ Verify user should able to remove all selected products from cart
     Verify selected product count with shopping cart count
 
 Verify that selected product should not disappear from cart after re-login
-    [Tags]    123
+    [Tags]    ip-9    inventory_page     regression
 
     select_unselect_product_on_inventory_page        Sauce Labs Backpack
     Verify selected product count with shopping cart count

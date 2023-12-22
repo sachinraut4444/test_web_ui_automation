@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation    Scenarios related to Cart Page
+Documentation    Added scenarios related to Cart Page
 
 Resource    ../resources/lib_resource.robot
 Resource    ../page_object/lib_page_object.robot
@@ -10,17 +10,17 @@ Test Teardown    Exit browser
 
 *** Test Cases ***
 Verify user should remove product form cart
-    [Tags]    1234
+    [Tags]    cart-1    cart_scenario     regression
     ${product_input_data}     read json file and return test data     two_product_list_file.json
     Add product to cart based on input file and verify shopping count with cart on inventory page       ${product_input_data}
     ${selected_product_name_list}    Get Dictionary Keys     ${product_input_data}
-    Proceed to view item on cart page
+    Proceed to view item oncart-1    cart_scenario     regression cart page
     Verify selected product count with shopping cart count
     Unselect product on cart page        ${selected_product_name_list}[0]    True
     Verify selected product count with shopping cart count
 
 Verify user should remove all product form cart
-    [Tags]    1234
+    [Tags]    cart-2    cart_scenario     regression
     ${product_input_data}     read json file and return test data     all_product_list_file.json
     Add product to cart based on input file and verify shopping count with cart on inventory page       ${product_input_data}
     ${selected_product_name_list}    Get Dictionary Keys     ${product_input_data}
@@ -32,7 +32,7 @@ Verify user should remove all product form cart
     Verify selected product count with shopping cart count
 
 Verify user should remove product form cart and add new product from product page
-    [Tags]    12345
+    [Tags]    cart-3    cart_scenario     regression
     ${product_input_data}     read json file and return test data     two_product_list_file.json
     Add product to cart based on input file and verify shopping count with cart on inventory page       ${product_input_data}
     ${selected_product_name_list}    Get Dictionary Keys     ${product_input_data}
@@ -47,7 +47,7 @@ Verify user should remove product form cart and add new product from product pag
     Verify selected product count with shopping cart count
 
 Verify user should able to open single product and remove product from cart
-    [Tags]    12345
+    [Tags]    cart-4    cart_scenario     regression
     ${product_input_data}     read json file and return test data     two_product_list_file.json
     Add product to cart based on input file and verify shopping count with cart on inventory page       ${product_input_data}
     ${selected_product_name_list}    Get Dictionary Keys     ${product_input_data}
