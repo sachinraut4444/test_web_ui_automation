@@ -1,3 +1,9 @@
+*** Settings ***
+Documentation     This file has assertion related scenarios
+
+Resource    ../page_object/lib_page_object.robot
+Resource    ../resources/lib_resource.robot
+
 *** Keywords ***
 Verify string should match
     [Arguments]    ${expected_string}   ${actual_string}

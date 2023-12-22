@@ -6,7 +6,6 @@ Resource    ../resources/lib_resource.robot
 Library         SeleniumLibrary
 
 *** Keywords ***
-
 navigate to url
 	[Arguments]	    ${URL}	    ${BROWSER}     ${headless}
     open local browser	    ${URL}	    ${BROWSER}	    ${headless}

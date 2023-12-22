@@ -1,7 +1,7 @@
 import logging
 import time
 
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.common.exceptions import ElementClickInterceptedException, NoSuchElementException, TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
@@ -27,36 +27,48 @@ class InventoryClass(BaseClass):
     }
 
     def click_element_on_inventory_page(self, locator_name):
-        element_locator_value = str(self.locator[locator_name])
-        self.selib.wait_until_element_is_visible(element_locator_value)
-        self.selib.click_element(element_locator_value)
+        try:
+            element_locator_value = str(self.locator[locator_name])
+            self.selib.wait_until_element_is_visible(element_locator_value)
+            self.selib.click_element(element_locator_value)
+        except (TimeoutException, ElementClickInterceptedException, NoSuchElementException) as ex:
+            BaseClass.log_exception(self, "click_element_on_inventory_page", str(ex))
+            raise
 
     def check_element_visible_inventory_on_page(self, locator_name):
-        element_locator_value = str(self.locator[locator_name])
-        self.selib.wait_until_element_is_visible(element_locator_value)
+        try:
+            element_locator_value = str(self.locator[locator_name])
+            self.selib.wait_until_element_is_visible(element_locator_value)
+        except (TimeoutException, ElementClickInterceptedException, NoSuchElementException) as ex:
+            BaseClass.log_exception(self, "check_element_visible_inventory_on_page", str(ex))
+            raise
 
     def get_all_product_name_and_price_from_inventory_page(self):
-        product_name_price_dict = {}
-        product_items = self.browser.find_elements(
-            By.XPATH, "//div[@class='inventory_list']//div[@class='inventory_item']"
-        )
-
-        for index, product_item in enumerate(product_items, start=1):
-            product_name_xpath = (
-                f"{self.get_product_xpath(index)}//div[@class='inventory_item_name ']"
+        try:
+            product_name_price_dict = {}
+            product_items = self.browser.find_elements(
+                By.XPATH, "//div[@class='inventory_list']//div[@class='inventory_item']"
             )
-            product_price_xpath = (
-                f"{self.get_product_xpath(index)}//div[@class='inventory_item_price']"
-            )
-            product_name_text = product_item.find_element(
-                By.XPATH, product_name_xpath
-            ).text
-            product_price = product_item.find_element(
-                By.XPATH, product_price_xpath
-            ).text
-            product_name_price_dict[product_name_text] = product_price
 
-        return product_name_price_dict
+            for index, product_item in enumerate(product_items, start=1):
+                product_name_xpath = (
+                    f"{self.get_product_xpath(index)}//div[@class='inventory_item_name ']"
+                )
+                product_price_xpath = (
+                    f"{self.get_product_xpath(index)}//div[@class='inventory_item_price']"
+                )
+                product_name_text = product_item.find_element(
+                    By.XPATH, product_name_xpath
+                ).text
+                product_price = product_item.find_element(
+                    By.XPATH, product_price_xpath
+                ).text
+                product_name_price_dict[product_name_text] = product_price
+
+            return product_name_price_dict
+        except (TimeoutException, ElementClickInterceptedException, NoSuchElementException) as ex:
+            BaseClass.log_exception(self, "get_all_product_name_and_price_from_inventory_page", str(ex))
+            raise
 
     def get_inventory_element_locator(self, locator_name):
         return self.locator[locator_name]
@@ -66,7 +78,6 @@ class InventoryClass(BaseClass):
 
     def load_product_on_page_within_one_second_after_sort_on_product_page(self):
         first_default_product_xpath = "//div[@class='inventory_list']//div[@class='inventory_item'][1]//DIV[@class='inventory_item_name '][text()='Sauce Labs Backpack']"
-
         try:
             start_time = int(round(time.time() * 1000))
             # Sort by Name (Z to A)
@@ -82,119 +93,130 @@ class InventoryClass(BaseClass):
             assert (
                 response_time <= 1
             ), "Sorted result did not load within the given time"
-        except TimeoutException:
-            logging.error(
-                "TimeoutException: Sorting and loading products took longer than expected."
-            )
+        except (TimeoutException, ElementClickInterceptedException, NoSuchElementException) as ex:
+            BaseClass.log_exception(self, "load_product_on_page_within_one_second_after_sort_on_product_page", str(ex))
+            raise
 
     def proceed_to_view_item_on_cart_page(self):
         try:
             self.selib.click_element(self.locator["shopping_cart"])
-        except NoSuchElementException:
-            raise "Unable to locate element"
+        except NoSuchElementException as ex:
+            BaseClass.log_exception(self, "proceed_to_view_item_on_cart_page", str(ex))
+        raise
 
     def select_unselect_product_on_inventory_page(self, product_name, add_product=True):
-        product_items = self.browser.find_elements(
-            By.XPATH, "//div[@class='inventory_list']//div[@class='inventory_item']"
-        )
-
-        for index, product_item in enumerate(product_items, start=1):
-            product_name_xpath = (
-                f"{self.get_product_xpath(index)}//div[@class='inventory_item_name ']"
+        try:
+            product_items = self.browser.find_elements(
+                By.XPATH, "//div[@class='inventory_list']//div[@class='inventory_item']"
             )
-            product_name_text = product_item.find_element(
-                By.XPATH, product_name_xpath
-            ).text
 
-            if product_name == product_name_text:
-                if add_product:
-                    try:
-                        add_cart_button_xpath = (
-                            f"{self.get_product_xpath(index)}//button"
-                        )
-                        product_item.find_element(
-                            By.XPATH, add_cart_button_xpath
-                        ).click()
-                        remove_button_xpath = f"{self.get_product_xpath(index)}//button[contains(text(), 'Remove')]"
+            for index, product_item in enumerate(product_items, start=1):
+                product_name_xpath = (
+                    f"{self.get_product_xpath(index)}//div[@class='inventory_item_name ']"
+                )
+                product_name_text = product_item.find_element(
+                    By.XPATH, product_name_xpath
+                ).text
 
-                        wait_time = 2
-                        WebDriverWait(self.browser, wait_time).until(
-                            EC.visibility_of_element_located(
-                                (By.XPATH, remove_button_xpath)
+                if product_name == product_name_text:
+                    if add_product:
+                        try:
+                            add_cart_button_xpath = (
+                                f"{self.get_product_xpath(index)}//button"
                             )
-                        )
-                    except TimeoutException:
-                        raise TimeoutError(f"Failed to add Product into cart ")
-                else:
-                    try:
-                        add_cart_button_xpath = (
-                            f"{self.get_product_xpath(index)}//button"
-                        )
-                        product_item.find_element(
-                            By.XPATH, add_cart_button_xpath
-                        ).click()
-                        add_button_xpath = f"{self.get_product_xpath(index)}//button[contains(text(), 'Add to cart')]"
-                        logging.info(f"remove_button_xpath {add_button_xpath}")
-                        wait_time = 2
-                        WebDriverWait(self.browser, wait_time).until(
-                            EC.visibility_of_element_located(
-                                (By.XPATH, add_button_xpath)
+                            product_item.find_element(
+                                By.XPATH, add_cart_button_xpath
+                            ).click()
+                            remove_button_xpath = f"{self.get_product_xpath(index)}//button[contains(text(), 'Remove')]"
+
+                            wait_time = 2
+                            WebDriverWait(self.browser, wait_time).until(
+                                EC.visibility_of_element_located(
+                                    (By.XPATH, remove_button_xpath)
+                                )
                             )
-                        )
-                    except TimeoutException:
-                        raise TimeoutError(f"Failed to remove Product")
+                        except TimeoutException:
+                            raise TimeoutError(f"Failed to add Product into cart ")
+                    else:
+                        try:
+                            add_cart_button_xpath = (
+                                f"{self.get_product_xpath(index)}//button"
+                            )
+                            product_item.find_element(
+                                By.XPATH, add_cart_button_xpath
+                            ).click()
+                            add_button_xpath = f"{self.get_product_xpath(index)}//button[contains(text(), 'Add to cart')]"
+                            logging.info(f"remove_button_xpath {add_button_xpath}")
+                            wait_time = 2
+                            WebDriverWait(self.browser, wait_time).until(
+                                EC.visibility_of_element_located(
+                                    (By.XPATH, add_button_xpath)
+                                )
+                            )
+                        except TimeoutException:
+                            raise TimeoutError(f"Failed to remove Product")
+        except (TimeoutException, ElementClickInterceptedException, NoSuchElementException) as ex:
+            BaseClass.log_exception(self, "select_unselect_product_on_inventory_page", str(ex))
+            raise
 
     def verify_ad_to_cart_element_aligned_properly(self):
-        product_items = self.browser.find_elements(
-            By.XPATH, "//div[@class='inventory_list']//div[@class='inventory_item']"
-        )
-        product_button_list = []
-        for index, product_item in enumerate(product_items, start=1):
-            product_button_xpath = f"{self.get_product_xpath(index)}//button"
-            product_button_class_text = product_item.find_element(
-                By.XPATH, product_button_xpath
-            ).get_attribute("class")
-            logging.info(f"{product_button_class_text}")
-            product_button_list.append(product_button_class_text)
-        product_button_list = list(set(product_button_list))
-        assert (
-            len(product_button_list) == 1
-        ), "Product Ad to cart button is not properly aligned"
+        try:
+            product_items = self.browser.find_elements(
+                By.XPATH, "//div[@class='inventory_list']//div[@class='inventory_item']"
+            )
+            product_button_list = []
+            for index, product_item in enumerate(product_items, start=1):
+                product_button_xpath = f"{self.get_product_xpath(index)}//button"
+                product_button_class_text = product_item.find_element(
+                    By.XPATH, product_button_xpath
+                ).get_attribute("class")
+                logging.info(f"{product_button_class_text}")
+                product_button_list.append(product_button_class_text)
+            product_button_list = list(set(product_button_list))
+            assert (
+                len(product_button_list) == 1
+            ), "Product Ad to cart button is not properly aligned"
+        except (TimeoutException, ElementClickInterceptedException, NoSuchElementException) as ex:
+            BaseClass.log_exception(self, "verify_ad_to_cart_element_aligned_properly", str(ex))
+            raise
 
     def verify_respective_image_display_for_product_on_inventory_page(self):
-        product_items = self.browser.find_elements(
-            By.XPATH, "//div[@class='inventory_list']//div[@class='inventory_item']"
-        )
-        image_url_list = []
-        for index, product_item in enumerate(product_items, start=1):
-            product_image_xpath = f"{self.get_product_xpath(index)}//div[@class='inventory_item_img']//img"
-            product_image_url = (
-                product_item.find_element(By.XPATH, product_image_xpath)
-                .get_attribute("src")
-                .split("media")[1]
+        try:
+            product_items = self.browser.find_elements(
+                By.XPATH, "//div[@class='inventory_list']//div[@class='inventory_item']"
             )
-            image_url_list.append(product_image_url)
-        image_url_list = list(set(image_url_list))
-        assert len(product_items) == len(
-            image_url_list
-        ), "Product Image is not matching"
+            image_url_list = []
+            for index, product_item in enumerate(product_items, start=1):
+                product_image_xpath = f"{self.get_product_xpath(index)}//div[@class='inventory_item_img']//img"
+                product_image_url = (
+                    product_item.find_element(By.XPATH, product_image_xpath)
+                    .get_attribute("src")
+                    .split("media")[1]
+                )
+                image_url_list.append(product_image_url)
+            image_url_list = list(set(image_url_list))
+            assert len(product_items) == len(
+                image_url_list
+            ), "Product Image is not matching"
+        except (TimeoutException, ElementClickInterceptedException, NoSuchElementException) as ex:
+            BaseClass.log_exception(self, "verify_respective_image_display_for_product_on_inventory_page", str(ex))
+            raise
 
     def verify_selected_product_count_with_shopping_cart_count(self):
-        selected_product_elements = self.browser.find_elements(
-            By.XPATH, "//button[contains(@data-test,'remove-')]"
-        )
-        shopping_cart_product_count = self.browser.find_element(
-            By.CLASS_NAME, "shopping_cart_link"
-        ).text
+        try:
+            selected_product_elements = self.browser.find_elements(By.XPATH, "//button[contains(@data-test,'remove-')]")
+            shopping_cart_product_count = self.browser.find_element(By.CLASS_NAME, "shopping_cart_link").text
 
-        selected_product_count = len(selected_product_elements)
-        logging.info(
-            f"Selected Product Count: {selected_product_count}, Shopping Cart Product Count: {shopping_cart_product_count}"
-        )
+            selected_product_count = len(selected_product_elements)
+            logging.info(
+                f"Selected Product Count: {selected_product_count}, Shopping Cart Product Count: {shopping_cart_product_count}")
 
-        if selected_product_count != 0:
-            assert selected_product_count == int(
-                shopping_cart_product_count
-            ), "Selected Product Mismatch with Add to cart"
-        elif len(shopping_cart_product_count) != 0:
-            assert False, "Unexpected Shopping Cart Product Count"
+            if selected_product_count != 0:
+                assert selected_product_count == int(
+                    shopping_cart_product_count), "Selected Product Mismatch with Add to cart"
+            elif len(shopping_cart_product_count) != 0:
+                assert False, "Unexpected Shopping Cart Product Count"
+
+        except (TimeoutException, ElementClickInterceptedException, NoSuchElementException) as ex:
+            self.log_exception("verify_selected_product_count_with_shopping_cart_count", str(ex))
+            raise

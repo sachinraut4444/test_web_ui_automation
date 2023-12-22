@@ -1,9 +1,5 @@
-import logging
-import time
-
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import ElementClickInterceptedException, NoSuchElementException, TimeoutException
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 
 from BaseClass import BaseClass
 
@@ -20,21 +16,33 @@ class CheckoutOverviewClass(BaseClass):
     }
 
     def get_item_total_price_of_selected_product(self, product_data):
-        total_price = 0.0
-        for product, data in product_data.items():
-            quantity = int(data["product_quantity"])
-            price = float(
-                data["product_price"].replace("$", "")
-            )  # Remove '$' and convert to float
-            total_price += quantity * price
+        try:
+            total_price = 0.0
+            for product, data in product_data.items():
+                quantity = int(data["product_quantity"])
+                price = float(
+                    data["product_price"].replace("$", "")
+                )  # Remove '$' and convert to float
+                total_price += quantity * price
 
-        return total_price
+            return total_price
+        except (TimeoutException, ElementClickInterceptedException, NoSuchElementException) as ex:
+            BaseClass.log_exception(self, "get_item_total_price_of_selected_product", str(ex))
+            raise
 
     def proceed_with_cancel_from_confirm_order_page(self):
-        self.selib.click_element(self.locator["cancel_button"])
+        try:
+            self.selib.click_element(self.locator["cancel_button"])
+        except (TimeoutException, ElementClickInterceptedException, NoSuchElementException) as ex:
+            BaseClass.log_exception(self, "proceed_with_cancel_from_confirm_order_page", str(ex))
+            raise
 
     def proceed_with_finish_order(self):
-        self.selib.click_element(self.locator["finish_button"])
+        try:
+            self.selib.click_element(self.locator["finish_button"])
+        except (TimeoutException, ElementClickInterceptedException, NoSuchElementException) as ex:
+            BaseClass.log_exception(self, "proceed_with_finish_order", str(ex))
+            raise
 
     def verify_selected_product_on_checkout_page(self, product_data):
         try:
@@ -60,19 +68,23 @@ class CheckoutOverviewClass(BaseClass):
                 raise Exception(
                     f"Dictionary Mismatch. Actual Product- {product_data} \n Expected Product - {product_dictionary_on_cart_page}"
                 )
-
-        except TimeoutException as ex:
-            logging.error("Timeout exception")
+        except (TimeoutException, ElementClickInterceptedException, NoSuchElementException) as ex:
+            BaseClass.log_exception(self, "verify_selected_product_on_checkout_page", str(ex))
+            raise
 
     def verify_total_price_of_selected_product(self, product_data):
-        actual_total_price_of_product = float(
-            BaseClass.get_element_text(self, "total_price_element").split("$")[1]
-        )
-        total_tax_on_selected_product = float(
-            BaseClass.get_element_text(self, "total_tax_element").split("$")[1]
-        )
-        sub_total_price = self.get_item_total_price_of_selected_product(product_data)
-        expected_total_price_of_product = round(
-            sub_total_price + total_tax_on_selected_product, 2
-        )
-        assert expected_total_price_of_product == actual_total_price_of_product
+        try:
+            actual_total_price_of_product = float(
+                BaseClass.get_element_text(self, "total_price_element").split("$")[1]
+            )
+            total_tax_on_selected_product = float(
+                BaseClass.get_element_text(self, "total_tax_element").split("$")[1]
+            )
+            sub_total_price = self.get_item_total_price_of_selected_product(product_data)
+            expected_total_price_of_product = round(
+                sub_total_price + total_tax_on_selected_product, 2
+            )
+            assert expected_total_price_of_product == actual_total_price_of_product
+        except (TimeoutException, ElementClickInterceptedException, NoSuchElementException) as ex:
+            BaseClass.log_exception(self, "verify_total_price_of_selected_product", str(ex))
+            raise

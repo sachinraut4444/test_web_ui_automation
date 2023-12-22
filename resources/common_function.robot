@@ -1,8 +1,11 @@
 *** Settings ***
+Documentation    This file has commonly used keyword implementation
+
 Library           Collections
 Library           OperatingSystem
 Library           String
 
+Resource    ../page_object/lib_page_object.robot
 Resource    ../resources/lib_resource.robot
 
 *** Keywords ***
