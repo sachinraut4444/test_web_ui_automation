@@ -1,0 +1,65 @@
+*** Settings ***
+Documentation    Added scenarios related order overview
+
+Resource    ../resources/lib_resource.robot
+Resource    ../page_object/lib_page_object.robot
+Library         SeleniumLibrary
+
+Test Setup    Login to application    ${parameters_Login}
+Test Teardown    Exit browser
+
+*** Test Cases ***
+verify count of selected product on checkout overview page
+    [Tags]    ov-1    order_overview     regression
+    ${product_data}     Verify user successfully added few products into cart    two_product_list_file.json
+    Add user information proceed with continue to confirm order details        ${user_first_name}   ${user_last_name}   ${postal_code}
+    Verify selected product on checkout page        ${product_data}
+
+verify total price of selected product on checkout overview page
+    [Tags]    ov-2    order_overview     regression
+    ${product_data}     Verify user successfully added few products into cart    two_product_list_file.json
+    Add user information proceed with continue to confirm order details        ${user_first_name}   ${user_last_name}   ${postal_code}
+    Verify total price of selected product    ${product_data}
+
+verify payment and shipping information for selected product on checkout overview page
+    [Tags]    ov-3    order_overview     regression
+    ${product_data}     Verify user successfully added few products into cart    two_product_list_file.json
+    Add user information proceed with continue to confirm order details        ${user_first_name}   ${user_last_name}   ${postal_code}
+    verify payment information     SauceCard #31337
+    Verify shipping information    Free Pony Express Delivery!
+
+Verify that on Cancel action user should navigate to inventory page
+    [Tags]    ov-4    order_overview     regression
+    ${product_data}     Verify user successfully added few products into cart    two_product_list_file.json
+    Add user information proceed with continue to confirm order details        ${user_first_name}   ${user_last_name}   ${postal_code}
+    Proceed with cancel from confirm order page
+    Check element visible inventory on page       sort_icon
+
+Verify user should able to open single product from confirmation page
+    [Tags]    ov-5    order_overview     regression
+    ${product_data}     Verify user successfully added few products into cart    two_product_list_file.json
+    Add user information proceed with continue to confirm order details        ${user_first_name}   ${user_last_name}   ${postal_code}
+    ${selected_product_name_list}    Get Dictionary Keys     ${product_data}
+    open product from cart page     ${selected_product_name_list}[0]
+    Click element on inventory page     remove_single_product_from_detail_view
+    Proceed to view item on cart page
+    Verify selected product count with shopping cart count
+
+Verify that on checkout confirmation page, user should navigate cart page and able to remove product
+    [Tags]    ov-6    order_overview     regression
+    ${product_data}     Verify user successfully added few products into cart    two_product_list_file.json
+    Add user information proceed with continue to confirm order details        ${user_first_name}   ${user_last_name}   ${postal_code}
+    Proceed to view item on cart page
+    ${selected_product_name_list}    Get Dictionary Keys     ${product_data}
+    open product from cart page     ${selected_product_name_list}[0]
+    Unselect product on cart page        ${selected_product_name_list}[0]    True
+
+verify total price should be zero if no product is selected
+    [Tags]    ov-7    order_overview     regression
+    ${product_data}     Verify user successfully added few products into cart    single_product_list_file.json
+    CheckoutUserInformationClass.Click element on page locator      cancel_button
+    ${selected_product_name_list}    Get Dictionary Keys     ${product_data}
+    Unselect product on cart page        ${selected_product_name_list}[0]    True
+    Proceed with checkout from cart page
+    Add user information proceed with continue to confirm order details        ${user_first_name}   ${user_last_name}   ${postal_code}
+    Verify total price for empty cart
