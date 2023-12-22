@@ -10,7 +10,6 @@ Test Teardown    Exit browser
 Verify that valid user able to login into application without any error
     [Setup]    Login to application    ${parameters_Login}
     [Tags]    login     1
-
     ${page_title}   InventoryClass.Get element text    product_title
     Verify string should match      Products        ${page_title}
 
