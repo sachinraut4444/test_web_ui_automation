@@ -10,6 +10,8 @@ Test Teardown    Exit browser
 
 *** Test Cases ***
 Verify user should remove product form cart
+    [Documentation]    In this test case, various user activities are verified on the cart page, such as adding and removing products.
+    ...                 After each activity, the count is verified.
     [Tags]    cart-1    cart_scenario     regression
     ${product_input_data}     read json file and return test data     two_product_list_file.json
     Add product to cart based on input file and verify shopping count with cart on inventory page       ${product_input_data}
@@ -23,7 +25,6 @@ Verify user should remove all product form cart
     [Tags]    cart-2    cart_scenario     regression
     ${product_input_data}     read json file and return test data     all_product_list_file.json
     Add product to cart based on input file and verify shopping count with cart on inventory page       ${product_input_data}
-    ${selected_product_name_list}    Get Dictionary Keys     ${product_input_data}
     Proceed to view item on cart page
     Verify selected product count with shopping cart count
     FOR     ${key}  IN  @{product_input_data.keys()}

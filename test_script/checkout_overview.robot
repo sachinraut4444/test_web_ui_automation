@@ -10,21 +10,18 @@ Test Teardown    Exit browser
 
 *** Test Cases ***
 verify count of selected product on checkout overview page
-    [Documentation]
     [Tags]    ov-1    order_overview     regression
     ${product_data}     Verify user successfully added few products into cart    two_product_list_file.json
     Add user information proceed with continue to confirm order details        ${user_first_name}   ${user_last_name}   ${postal_code}
     Verify selected product on checkout page        ${product_data}
 
 verify total price of selected product on checkout overview page
-    [Documentation]
     [Tags]    ov-2    order_overview     regression
     ${product_data}     Verify user successfully added few products into cart    two_product_list_file.json
     Add user information proceed with continue to confirm order details        ${user_first_name}   ${user_last_name}   ${postal_code}
     Verify total price of selected product    ${product_data}
 
 verify payment and shipping information for selected product on checkout overview page
-    [Documentation]
     [Tags]    ov-3    order_overview     regression
     ${product_data}     Verify user successfully added few products into cart    two_product_list_file.json
     Add user information proceed with continue to confirm order details        ${user_first_name}   ${user_last_name}   ${postal_code}
@@ -57,3 +54,12 @@ Verify that on checkout confirmation page, user should navigate cart page and ab
     open product from cart page     ${selected_product_name_list}[0]
     Unselect product on cart page        ${selected_product_name_list}[0]    True
 
+verify total price should be zero if no product is selected
+    [Tags]    ov-7    order_overview     regression
+    ${product_data}     Verify user successfully added few products into cart    single_product_list_file.json
+    CheckoutUserInformationClass.Click element on page locator      cancel_button
+    ${selected_product_name_list}    Get Dictionary Keys     ${product_data}
+    Unselect product on cart page        ${selected_product_name_list}[0]    True
+    Proceed with checkout from cart page
+    Add user information proceed with continue to confirm order details        ${user_first_name}   ${user_last_name}   ${postal_code}
+    Verify total price for empty cart

@@ -17,8 +17,8 @@ Test Teardown    Exit browser
     END
     Verify selected product count with shopping cart count
 
-Verify that product display with respective images
-    [Tags]    pbu-2    problem_user     regression
+[Expected to FAIL]Verify that product display with respective images
+    [Tags]    pbu-2    problem_user     regression  negative_scenario
 
     Verify respective image display for product on inventory page
 

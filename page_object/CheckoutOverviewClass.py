@@ -88,3 +88,24 @@ class CheckoutOverviewClass(BaseClass):
         except (TimeoutException, ElementClickInterceptedException, NoSuchElementException) as ex:
             BaseClass.log_exception(self, "verify_total_price_of_selected_product", str(ex))
             raise
+
+    def verify_total_price_for_empty_cart(self):
+        try:
+            import time
+            time.sleep(10)
+            actual_total_price_of_product = float(
+                BaseClass.get_element_text(self, "total_price_element").split("$")[1]
+            )
+            total_tax_on_selected_product = float(
+                BaseClass.get_element_text(self, "total_tax_element").split("$")[1]
+            )
+            sub_total_price = float(0.00)
+            expected_total_price_of_product = round(
+                sub_total_price + total_tax_on_selected_product, 2
+            )
+            import logging
+            logging.info(f"expected_total_price_of_product{expected_total_price_of_product}, actual_total_price_of_product {actual_total_price_of_product}")
+            assert expected_total_price_of_product == actual_total_price_of_product
+        except (TimeoutException, ElementClickInterceptedException, NoSuchElementException) as ex:
+            BaseClass.log_exception(self, "verify_total_price_for_empty_cart", str(ex))
+            raise

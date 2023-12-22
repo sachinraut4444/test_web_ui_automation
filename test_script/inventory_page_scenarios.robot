@@ -93,6 +93,18 @@ Verify that selected product should not disappear from cart after re-login
     ${actual_selected_product}      InventoryClass.Get element text     shopping_cart
     Verify number       2       ${actual_selected_product}
 
+Verify that on clicking about us section, user navigate to company information page
+    [Tags]    ip-10     inventory_page     regression
+    Click element on inventory page     side_menu_open_button
+    Check element visible inventory on page       side_menu_all_item_button
+    Check element visible inventory on page       side_menu_about_button
+    Click element on inventory page     side_menu_about_button
+    Check element visible inventory on page       sign_in_button
+    ${navigated_URL}      Get location
+    ${expected_URL}     Set variable        https://saucelabs.com/
+    Verify string should match    ${expected_URL}       ${navigated_URL}
+
+
 
 
 

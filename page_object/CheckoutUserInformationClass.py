@@ -9,6 +9,7 @@ class CheckoutUserInformationClass(BaseClass):
         "last_name_input_box": "id=last-name",
         "postal_code_input_box": "id=postal-code",
         "continue_button": "id=continue",
+        "cancel_button": "id=cancel",
         "error_button": "xpath=//h3[@data-test='error']",
     }
 

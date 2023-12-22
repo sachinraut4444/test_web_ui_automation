@@ -3,7 +3,6 @@ import time
 
 from selenium.common.exceptions import ElementClickInterceptedException, NoSuchElementException, TimeoutException
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
@@ -24,6 +23,7 @@ class InventoryClass(BaseClass):
         "side_menu_close_button": "id=react-burger-cross-btn",
         "product_name": "//div[@class='inventory_item'][1]//div[@class='inventory_item_name']",
         "remove_single_product_from_detail_view": "xpath=//button[contains(text(), 'Remove')]",
+        "sign_in_button": "xpath=//button[contains(text(), 'Sign in')]"
     }
 
     def click_element_on_inventory_page(self, locator_name):

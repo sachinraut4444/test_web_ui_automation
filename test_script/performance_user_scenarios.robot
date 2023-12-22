@@ -27,3 +27,22 @@ Verify product should sort within one second for standard user
     [Tags]    pu-4    performance_user     regression
     Load product on page within one second after sort on product page
 
+[Expected to FAIL]Verify user should navigate immediately to product list page after completing order for performance glitch user
+    [Setup]         Login to application    ${performance_glitch_user_parameters_Login}
+    [Tags]    pu-5    performance_user     regression       negative_scenario
+    ${product_data}     Verify user successfully added few products into cart    two_product_list_file.json
+    Add user information proceed with continue to confirm order details        ${user_first_name}   ${user_last_name}   ${postal_code}
+    Verify selected product on checkout page        ${product_data}
+    Proceed with finish order
+    Verify order confirmation message
+    Load product detail page within one second after confirming order
+
+Verify user should navigate immediately to product list page after completing order for standard user
+    [Setup]         Login to application    ${parameters_Login}
+    [Tags]    pu-6   performance_user     regression       negative_scenario
+    ${product_data}     Verify user successfully added few products into cart    two_product_list_file.json
+    Add user information proceed with continue to confirm order details        ${user_first_name}   ${user_last_name}   ${postal_code}
+    Verify selected product on checkout page        ${product_data}
+    Proceed with finish order
+    Verify order confirmation message
+    Load product detail page within one second after confirming order

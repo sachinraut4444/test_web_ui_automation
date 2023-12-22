@@ -20,6 +20,22 @@ read json file and return test data
     ${test_data_dict}    Evaluate  json.loads('''${json_file}''')     json
     [Return]    ${test_data_dict}
 
+place order
+    [Arguments]     ${product_list_file}
+        ${product_data}     read json file and return test data     ${product_list_file}
+    FOR     ${key}  IN  @{product_data.keys()}
+        select_unselect_product_on_inventory_page     ${key}
+    END
+    Verify selected product count with shopping cart count
+    Proceed to view item on cart page
+    Verify selected product on cart page      ${product_data}
+    Proceed with checkout from cart page
+    Add user information proceed with continue to confirm order details        ${user_first_name}   ${user_last_name}   ${postal_code}
+    Verify selected product on checkout page        ${product_data}
+    Proceed with finish order
+    Verify order confirmation message
+    Navigate to product list page after confirming order
+
 sort inventory product
     [Arguments]    ${sorting_type}
     ${sorting_element_path}     Get inventory element locator    sort_icon
