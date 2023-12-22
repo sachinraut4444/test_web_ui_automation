@@ -14,7 +14,7 @@ Verify user should remove product form cart
     ${product_input_data}     read json file and return test data     two_product_list_file.json
     Add product to cart based on input file and verify shopping count with cart on inventory page       ${product_input_data}
     ${selected_product_name_list}    Get Dictionary Keys     ${product_input_data}
-    Proceed to view item oncart-1    cart_scenario     regression cart page
+    Proceed to view item on cart page
     Verify selected product count with shopping cart count
     Unselect product on cart page        ${selected_product_name_list}[0]    True
     Verify selected product count with shopping cart count

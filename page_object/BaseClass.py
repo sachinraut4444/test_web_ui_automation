@@ -4,9 +4,13 @@ import traceback
 from datetime import datetime
 from PageObjectLibrary import PageObject
 from pytz import timezone
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import ElementClickInterceptedException, NoSuchElementException, TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.wait import WebDriverWait
 
 IST = timezone("Asia/Kolkata")
 
@@ -21,6 +25,13 @@ class BaseClass(PageObject):
     def __init__(self):
         super().__init__()
 
+    def check_visible_and_return_status(self, element_xpath, timeout=0.5):
+        try:
+            WebDriverWait(self.browser, timeout).until(
+                EC.visibility_of_element_located((By.XPATH, element_xpath)))
+            return True
+        except TimeoutException:
+            return False
     def clear_input_box_text(self, locator_name):
         try:
             element_locator = str(self.locator[locator_name])

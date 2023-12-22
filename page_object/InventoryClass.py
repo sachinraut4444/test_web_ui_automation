@@ -102,62 +102,52 @@ class InventoryClass(BaseClass):
             self.selib.click_element(self.locator["shopping_cart"])
         except NoSuchElementException as ex:
             BaseClass.log_exception(self, "proceed_to_view_item_on_cart_page", str(ex))
-        raise
+            raise
 
     def select_unselect_product_on_inventory_page(self, product_name, add_product=True):
         try:
-            product_items = self.browser.find_elements(
-                By.XPATH, "//div[@class='inventory_list']//div[@class='inventory_item']"
-            )
+            product_items = self.browser.find_elements(By.XPATH,
+                                                       "//div[@class='inventory_list']//div[@class='inventory_item']")
 
             for index, product_item in enumerate(product_items, start=1):
-                product_name_xpath = (
-                    f"{self.get_product_xpath(index)}//div[@class='inventory_item_name ']"
-                )
-                product_name_text = product_item.find_element(
-                    By.XPATH, product_name_xpath
-                ).text
+                product_name_xpath = f"{self.get_product_xpath(index)}//div[@class='inventory_item_name ']"
+                product_name_text = product_item.find_element(By.XPATH, product_name_xpath).text
 
                 if product_name == product_name_text:
                     if add_product:
-                        try:
-                            add_cart_button_xpath = (
-                                f"{self.get_product_xpath(index)}//button"
-                            )
-                            product_item.find_element(
-                                By.XPATH, add_cart_button_xpath
-                            ).click()
-                            remove_button_xpath = f"{self.get_product_xpath(index)}//button[contains(text(), 'Remove')]"
-
-                            wait_time = 2
-                            WebDriverWait(self.browser, wait_time).until(
-                                EC.visibility_of_element_located(
-                                    (By.XPATH, remove_button_xpath)
-                                )
-                            )
-                        except TimeoutException:
-                            raise TimeoutError(f"Failed to add Product into cart ")
+                        self.add_product_to_cart(index, product_item)
                     else:
-                        try:
-                            add_cart_button_xpath = (
-                                f"{self.get_product_xpath(index)}//button"
-                            )
-                            product_item.find_element(
-                                By.XPATH, add_cart_button_xpath
-                            ).click()
-                            add_button_xpath = f"{self.get_product_xpath(index)}//button[contains(text(), 'Add to cart')]"
-                            logging.info(f"remove_button_xpath {add_button_xpath}")
-                            wait_time = 2
-                            WebDriverWait(self.browser, wait_time).until(
-                                EC.visibility_of_element_located(
-                                    (By.XPATH, add_button_xpath)
-                                )
-                            )
-                        except TimeoutException:
-                            raise TimeoutError(f"Failed to remove Product")
+                        self.remove_product_from_cart(index, product_item)
         except (TimeoutException, ElementClickInterceptedException, NoSuchElementException) as ex:
             BaseClass.log_exception(self, "select_unselect_product_on_inventory_page", str(ex))
             raise
+
+    def add_product_to_cart(self, index, product_item):
+        try:
+            add_cart_button_xpath = f"{self.get_product_xpath(index)}//button"
+            remove_button_xpath = f"{self.get_product_xpath(index)}//button[contains(text(), 'Remove')]"
+            already_product_added = BaseClass.check_visible_and_return_status(self, remove_button_xpath)
+
+            if not already_product_added:
+                product_item.find_element(By.XPATH, add_cart_button_xpath).click()
+                wait_time = 2
+                WebDriverWait(self.browser, wait_time).until(
+                    EC.visibility_of_element_located((By.XPATH, remove_button_xpath)))
+        except TimeoutException:
+            raise TimeoutError("Failed to add Product into cart")
+
+    def remove_product_from_cart(self, index, product_item):
+        try:
+            add_cart_button_xpath = f"{self.get_product_xpath(index)}//button"
+            add_button_xpath = f"{self.get_product_xpath(index)}//button[contains(text(), 'Add to cart')]"
+
+            product_item.find_element(By.XPATH, add_cart_button_xpath).click()
+            logging.info(f"remove_button_xpath {add_button_xpath}")
+
+            wait_time = 2
+            WebDriverWait(self.browser, wait_time).until(EC.visibility_of_element_located((By.XPATH, add_button_xpath)))
+        except TimeoutException:
+            raise TimeoutError("Failed to remove Product")
 
     def verify_ad_to_cart_element_aligned_properly(self):
         try:
